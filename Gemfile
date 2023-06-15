@@ -8,6 +8,14 @@ gem "rails", "~> 7.0.5"
 
 gem 'rack-cors'
 
+gem 'json'
+
+gem 'rest-client'
+
+gem 'ffi', '~> 1.15', '>= 1.15.4'
+
+gem 'httparty'
+
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", "~> 1.4"
 

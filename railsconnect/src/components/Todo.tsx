@@ -1,28 +1,30 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Button } from '@mui/material';
 import axios from 'axios';
 
 const submitTask = async (taskData:any) => {
-  // const randomNumber = Math.floor(Math.random() * 1000000);
-  // taskData['id']=randomNumber
   console.log(taskData)
 
   axios.post('http://localhost:3000/todos', taskData)
   .then(response => {
-    console.log(response);
+    console.log(response.data);
   })
   .catch(error => {
     console.error(error);
   });
+};
 
-  // try {
-  //   const response = await axios.post('http://localhost:3000/todos', taskData);
-  //   console.log(taskData)
-  //   console.log(response.data); 
-  // } catch (error) {
-  //   console.error(error); 
-  // }
+const deleteTask = async (taskId:any) => {
+  console.log(taskId)
+
+  axios.delete(`http://localhost:3000/todos/${taskId}`)
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });  
 };
 
 export const Todo = (props:any) => {
@@ -30,9 +32,9 @@ export const Todo = (props:any) => {
 
   const handleSubmit = (event:any) =>{
     event.preventDefault();
-    submitTask({task:task})
+    submitTask({todo:task})
   }
-    
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -41,8 +43,8 @@ export const Todo = (props:any) => {
       </form>
          {props.api.map((item:any) => {
             return <div className='task' key={item.id}>
-                <h2 className='taskname'>{item.task}</h2>
-                <CancelIcon className='cancelbtn' />
+                <h2 className='taskname'>{item.todo}</h2>
+                <CancelIcon className='cancelbtn' onClick={() => deleteTask(item.id) }/>
             </div>
         })}
     </div>

@@ -1,3 +1,5 @@
+require 'httparty'
+
 class TodosController < ApplicationController
   before_action :set_todo, only: %i[ show update destroy ]
 
@@ -9,18 +11,28 @@ class TodosController < ApplicationController
 
   # GET /todos/1
   def show
-    render json: @todo
+    id = params[:id]
+    response = HTTParty.get("http://localhost:4000/users/#{id}")
+
+    if response.success?
+      render json: response.parsed_response, status: :ok
+    else
+      render json: { error: "Failed to retrieve todo with ID #{id} from JSON server." }, status: :unprocessable_entity
+    end
   end
 
   # POST /todos
 
+  require 'httparty'
+
   def create
-    todo = Todo.new(todo_params)
-    if todo.save
-      send_to_json_server(todo)
-      render json: todo, status: :created
+    todo_data = { "todo": params[:todo] }
+    response = HTTParty.post('http://localhost:4000/users', body: todo_data.to_json, headers: { 'Content-Type' => 'application/json' })
+
+    if response.success?
+      render json: response.parsed_response, status: :created
     else
-      render json: { errors: todo.errors.full_messages, status: 'failure' }
+      render json: { errors: response.parsed_response, status: 'failure' }, status: :unprocessable_entity
     end
   end
 
@@ -34,50 +46,27 @@ class TodosController < ApplicationController
   end
 
   # DELETE /todos/1
+
   def destroy
-    @todo.destroy
-  end
+    id = params[:id]
+    response = HTTParty.delete("http://localhost:4000/users/#{id}")
+  
+    if response.success?
+      render json: { message: "Todo with ID #{id} deleted successfully." }, status: :ok
+    else
+      render json: { error: "Failed to delete todo with ID #{id}." }, status: :unprocessable_entity
+    end
+  end  
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_todo
-      @todo = Todo.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    # def todo_params
-    #   params.fetch(:todo, {})
-    # end
+    def set_todo
+      @todo = Todo.find_by(id: params[:id])
+      render json: { error: "Todo with ID #{params[:id]} not found." }, status: :not_found unless @todo
+    end
 
     def todo_params
-      params.fetch(:todo)
-      params.require(:todo).permit(:task, :id) 
+      params.permit(users: [:todo])
     end
 
-    def send_to_json_server(todo)
-
-      uri = URI('http://localhost:4000/users') 
-      http = Net::HTTP.new(uri.host, uri.port)
-      request = Net::HTTP::Post.new(uri.path, { 'Content-Type': 'application/json' })
-      request.body = data.to_json
-      response = http.request(request)
-      
-      if response.is_a?(Net::HTTPSuccess)
-        puts 'Data sent to JSON server successfully!'
-        puts 'Response:', response.body
-      else
-        puts 'Error sending data to JSON server:', response.message
-      end
-
-      # payload = todo.to_json
-      # headers = { 'Content-Type': 'application/json' }
-      
-      # begin
-      #   response = Axios.post('http://localhost:4000/users', payload, headers)
-      #   logger 'Data sent to JSON server successfully!'
-      #   logger 'Response:', response.data
-      # rescue StandardError => e
-      #   puts 'Error sending data to JSON server:', e.message
-      # end
-    end
 end
