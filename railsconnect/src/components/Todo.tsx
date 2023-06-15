@@ -3,37 +3,24 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { Button } from '@mui/material';
 import axios from 'axios';
 
-const submitTask = async (taskData:any) => {
-  console.log(taskData)
-
-  axios.post('http://localhost:3000/todos', taskData)
-  .then(response => {
-    console.log(response.data);
-  })
-  .catch(error => {
-    console.error(error);
-  });
-};
-
-const deleteTask = async (taskId:any) => {
-  console.log(taskId)
-
-  axios.delete(`http://localhost:3000/todos/${taskId}`)
-    .then(response => {
-      console.log(response.data);
-    })
-    .catch(error => {
-      console.error(error);
-    });  
-};
-
 export const Todo = (props:any) => {
   const [task,setTask] = useState('')
+  const [update,setUpdate] = useState(0)
 
   const handleSubmit = (event:any) =>{
     event.preventDefault();
-    submitTask({todo:task})
+    props.submitTask({todo:task})
+    setUpdate(update+1)
   }
+
+  const deleteTask = (taskId:any) => {
+    props.deleteTask(taskId)
+    setUpdate(update+1)
+  }
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/todos').then((response) => props.setApi(response.data));
+  },[update])
 
   return (
     <div>
