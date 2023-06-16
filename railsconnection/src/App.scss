@@ -1,0 +1,49 @@
+.App {
+  text-align: center;
+  margin-top: 20px;
+
+  .inputtask {
+    width: 200px;
+    height: 30px;
+    margin-top: 20px;
+    border-radius: 10px;
+  }
+
+  .sendbtn{
+    background-color: lightblue;
+    color: black;
+  }
+
+  .togglebtn{
+    background-color: lightblue;
+    color: black;
+  }
+
+  .task {
+    width: 500px;
+    height: 60px;
+    border: 2px solid black;
+    text-align: left;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 20px;
+
+    .cancelbtn {
+      float: right;
+      margin-top: 18px;
+      margin-right: 5px;
+    }
+
+    .taskname {
+      float: left;
+      margin-left: 5px;
+      margin-top: 10px;
+    }
+
+  }
+
+  .task:hover{
+    background-color: lightblue;
+  }
+}
